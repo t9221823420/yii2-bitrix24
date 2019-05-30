@@ -8,6 +8,7 @@
 
 namespace yozh\bitrix24\controllers;
 
+use yii\base\Action;
 use yii\web\Controller;
 use yozh\bitrix24\actions\EntryAction;
 use yozh\bitrix24\actions\InstallAction;
@@ -29,11 +30,25 @@ class DefaultController extends Controller
                 'class' => InstallAction::class,
             ],
             
-            'entry'   => [
+            'entry' => [
                 'class' => EntryAction::class,
             ],
         
         ];
+    }
+    
+    /**
+     * @param Action $action
+     * @return bool
+     * @throws \yii\web\BadRequestHttpException
+     */
+    public function beforeAction( Action $action)
+    {
+        if ($action->id == 'install') {
+            $this->enableCsrfValidation = false;
+        }
+        
+        return parent::beforeAction($action);
     }
     
 }

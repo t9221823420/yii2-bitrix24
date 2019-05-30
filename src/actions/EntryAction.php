@@ -22,7 +22,7 @@ class EntryAction extends Action
      */
     public function run(): string
     {
-        return $this->controller->renderPartial( 'entry', [
-        ] );
+        return $this->controller->renderPartial('entry', [
+        ]);
     }
 }

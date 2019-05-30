@@ -10,7 +10,8 @@ namespace yozh\bitrix24;
 
 use Psr\Log\LoggerInterface;
 use Yii;
-use yozh\bitrix24\Credentials;
+use yii\helpers\Url;
+use yozh\bitrix24\models\Credentials;
 use Bitrix24\Exceptions\Bitrix24Exception;
 
 class Bitrix24 extends \Bitrix24\Bitrix24
@@ -26,15 +27,15 @@ class Bitrix24 extends \Bitrix24\Bitrix24
      * @param LoggerInterface|null $logger
      * @throws Bitrix24Exception
      */
-    public function __construct( $isSaveRawResponse = false, ?LoggerInterface $logger = null )
+    public function __construct($isSaveRawResponse = false, ?LoggerInterface $logger = null)
     {
-        parent::__construct( $isSaveRawResponse, $logger );
+        parent::__construct($isSaveRawResponse, $logger);
         
-        $this->setApplicationScope( explode( ',', Yii::$app->params['B24_APPLICATION_SCOPE'] ) );
-        $this->setApplicationId( Yii::$app->params['B24_APPLICATION_ID'] );
-        $this->setApplicationSecret( Yii::$app->params['B24_APPLICATION_SECRET'] );
+        $this->setApplicationScope(explode(',', Yii::$app->params['B24_APPLICATION_SCOPE']));
+        $this->setApplicationId(Yii::$app->params['B24_APPLICATION_ID']);
+        $this->setApplicationSecret(Yii::$app->params['B24_APPLICATION_SECRET']);
         
-        $this->setOnExpiredToken( [ $this, 'refreshAccessToken' ] );
+        $this->setOnExpiredToken([$this, 'refreshAccessToken']);
     }
     
     /**
@@ -43,13 +44,13 @@ class Bitrix24 extends \Bitrix24\Bitrix24
      * @return mixed
      * @throws Bitrix24Exception
      */
-    public function call( $methodName, array $additionalParameters = [] )
+    public function call($methodName, array $additionalParameters = [])
     {
-        if( $this->credentials === null ) {
+        if ($this->_credentials === null) {
             $this->fetchAccessToken();
         }
         
-        return parent::call( $methodName, $additionalParameters );
+        return parent::call($methodName, $additionalParameters);
     }
     
     /**
@@ -57,40 +58,39 @@ class Bitrix24 extends \Bitrix24\Bitrix24
      */
     public function fetchAccessToken(): void
     {
-        if( ( $this->credentials = Credentials::findOne( 1 ) ) === null ) {
-            throw new \HttpRuntimeException( 500, "No access token found" );
+        if (($this->_credentials = Credentials::findOne(1)) === null) {
+            throw new \HttpRuntimeException(500, "No access token found");
         }
         
-        $this->setDomain( $this->credentials->domain );
-        $this->setMemberId( $this->credentials->member_id );
-        $this->setAccessToken( $this->credentials->access_token );
-        $this->setRefreshToken( $this->credentials->refresh_token );
+        $this->setDomain($this->_credentials->domain);
+        $this->setMemberId($this->_credentials->member_id);
+        $this->setAccessToken($this->_credentials->access_token);
+        $this->setRefreshToken($this->_credentials->refresh_token);
         
-        if( $this->credentials->expires < new \DateTime( 'now' ) ) {
+        if ($this->_credentials->expires < new \DateTime('now')) {
             $this->refreshAccessToken();
         }
     }
     
     protected function refreshAccessToken(): void
     {
-        $this->setRedirectUri( Url::home( true ) . '/bitrix24/install' );
+        $this->setRedirectUri(Url::home(true) . '/bitrix24/install');
         $result = $this->getNewAccessToken();
         
-        if( $result['member_id'] === $this->credentials->member_id ) {
+        if ($result['member_id'] === $this->_credentials->member_id) {
             
             $userData = [
                 'access_token'  => $result['access_token'],
                 'refresh_token' => $result['refresh_token'],
             ];
             
-            $this->setCredentials( $userData );
+            $this->setCredentials($userData);
             
             //saving for current run
-            $this->setAccessToken( $this->credentials->access_token );
-            $this->setRefreshToken( $this->credentials->refresh_token );
-        }
-        else {
-            throw new Bitrix24Exception( 'Wrong member_id given' );
+            $this->setAccessToken($this->_credentials->access_token);
+            $this->setRefreshToken($this->_credentials->refresh_token);
+        } else {
+            throw new Bitrix24Exception('Wrong member_id given');
         }
     }
     
@@ -98,24 +98,24 @@ class Bitrix24 extends \Bitrix24\Bitrix24
      * @param array $data
      * @throws \Exception
      */
-    public function addNewCredentials( array $data ): void
+    public function addNewCredentials(array $data): void
     {
-        if( isset(
+        if (isset(
             $data['domain'],
             $data['access_token'],
             $data['refresh_token'],
-            $data['member_id'] )
+            $data['member_id'])
         ) {
             
-            if( !$this->credentials = Credentials::findOne( [ 'member_id' => $data['member_id'] ] ) ) {
+            if (!$this->_credentials = Credentials::findOne(['member_id' => $data['member_id']])) {
                 
-                if( !$Credentials = Credentials::findOne( [ 'member_id' => $request->get( 'member_id' ) ] ) ) {
+                if (!$Credentials = Credentials::findOne(['member_id' => $request->get('member_id')])) {
                     $Credentials = new Credentials();
                 }
                 
             }
             
-            $this->setCredentials( $data, true );
+            $this->setCredentials($data, true);
         }
     }
     
@@ -123,23 +123,23 @@ class Bitrix24 extends \Bitrix24\Bitrix24
      * @param array $data
      * @throws \Exception
      */
-    public function setCredentials( array $data, bool $save = false ): void
+    public function setCredentials(array $data, bool $save = false): void
     {
         //setting changed date
-        $changed  = new \DateTime( 'now' );
+        $changed  = new \DateTime('now');
         $expires  = clone $changed;
         $duration = 3600;
-        if( isset( $data['expires_in'] ) && (int)$data['expires_in'] < 1 ) {
+        if (isset($data['expires_in']) && (int)$data['expires_in'] < 1) {
             $duration = (int)$data['expires_in'];
         }
-        $expires->add( new \DateInterval( 'PT' . $duration . 'S' ) );
+        $expires->add(new \DateInterval('PT' . $duration . 'S'));
         
-        $data['changed'] = $changed;
-        $data['expires'] = $expires;
+        $data['changed'] = $changed->format('Y-m-d H:i:s');
+        $data['expires'] = $expires->format('Y-m-d H:i:s');
         
-        $this->credentials->setAttributes( $data );
+        $this->_credentials->setAttributes($data);
         
-        !$save ?: $this->credentials->save();
+        !$save ?: $this->_credentials->save();
     }
     
 }

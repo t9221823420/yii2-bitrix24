@@ -27,38 +27,37 @@ class InstallAction extends Action
         
         try {
             
-            if( !$Credentials = Credentials::findOne( [ 'member_id' => $request->get( 'member_id' ) ] ) ) {
+            if (!$Credentials = Credentials::findOne(['member_id' => $request->get('member_id')])) {
                 $Credentials = new Credentials();
             }
             
             //setting changed date
-            $changed = new \DateTime( 'now' );
+            $changed = new \DateTime('now');
             
             //setting expires date
             $expires  = clone $changed;
-            $duration = (int)$request->get( 'AUTH_EXPIRES' );
-            $expires->add( new \DateInterval( 'PT' . $duration . 'S' ) );
+            $duration = (int)$request->post('AUTH_EXPIRES');
+            $expires->add(new \DateInterval('PT' . $duration . 'S'));
             
-            $Credentials->setAttributes( [
-                'domain'        => $request->get( 'DOMAIN' ),
-                'access_token'  => $request->get( 'AUTH_ID' ),
-                'refresh_token' => $request->get( 'REFRESH_ID' ),
-                'member_id'     => $request->get( 'member_id' ),
-                'changed'       => $changed,
-                'expires'       => $expires,
-            ] );
+            $Credentials->setAttributes([
+                'domain'        => $request->get('DOMAIN'),
+                'access_token'  => $request->post('AUTH_ID'),
+                'refresh_token' => $request->post('REFRESH_ID'),
+                'member_id'     => $request->post('member_id'),
+                'changed'       => $changed->format('Y-m-d H:i:s'),
+                'expires'       => $expires->format('Y-m-d H:i:s'),
+            ]);
             
-            if( !$Credentials->save() ){
+            if (!$Credentials->save()) {
                 $errorsList = $Credentials->getErrors();
-            }
-            ;
+            };
             
-        } catch( \Exception $exception ) {
+        } catch (\Exception $exception) {
             $errorsList[] = $exception->getMessage();
         }
         
-        return $this->controller->renderPartial( 'install', [
+        return $this->controller->renderPartial('install', [
             'errorsList' => $errorsList,
-        ] );
+        ]);
     }
 }

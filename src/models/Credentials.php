@@ -34,7 +34,8 @@ class Credentials extends \yii\db\ActiveRecord
     {
         return [
             [['domain', 'expires', 'access_token', 'refresh_token', 'member_id', 'changed'], 'required'],
-            [['domain', 'expires', 'access_token', 'refresh_token', 'member_id', 'changed'], 'string', 'max' => 255],
+            [['domain', 'access_token', 'refresh_token', 'member_id',], 'string', 'max' => 255],
+            [['expires', 'changed',], 'date', 'format' => 'yyyy-M-d H:m:s'],
         ];
     }
     

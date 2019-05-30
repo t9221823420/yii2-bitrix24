@@ -8,11 +8,11 @@ use yii\web\UrlRule;
 class Bootstrap implements BootstrapInterface
 {
     
-    public function bootstrap( $app )
+    public function bootstrap($app)
     {
-    
-        $app->getUrlManager()->addRules( [
         
+        $app->getUrlManager()->addRules([
+            
             // remove module/default/action
             [
                 'class'   => UrlRule::class,
@@ -24,8 +24,8 @@ class Bootstrap implements BootstrapInterface
                 'pattern' => 'bitrix24/entry',
                 'route'   => 'bitrix24/default/entry',
             ],
-    
-        ], false )
+        
+        ], false)
         ;
     }
 }

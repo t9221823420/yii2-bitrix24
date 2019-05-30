@@ -12,15 +12,15 @@ class m190517_055940_create_bitrix24_credentials_table extends Migration
      */
     public function safeUp()
     {
-        $this->createTable( '{{%bitrix24_credentials}}', [
+        $this->createTable('{{%bitrix24_credentials}}', [
             'id'            => $this->primaryKey(),
+            'member_id'     => $this->string(),
             'domain'        => $this->string(),
-            'expires'       => $this->dateTime(),
             'access_token'  => $this->string(),
             'refresh_token' => $this->string(),
-            'member_id'     => $this->string(),
             'changed'       => $this->dateTime(),
-        ] );
+            'expires'       => $this->dateTime(),
+        ]);
     }
     
     /**
@@ -28,6 +28,6 @@ class m190517_055940_create_bitrix24_credentials_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable( '{{%bitrix24_credentials}}' );
+        $this->dropTable('{{%bitrix24_credentials}}');
     }
 }

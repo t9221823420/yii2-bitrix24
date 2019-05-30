@@ -8,10 +8,10 @@
 ?>
 
 
-<h2>Установка приложения</h2>
+    <h2>Установка приложения</h2>
 
-<?php if($errorsList): ?>
-    
+<?php if ($errorsList): ?>
+
     <div id="result" class="failed">
         Ошибки при установке приложения:
         <pre><?php print_r($errorsList) ?></pre>
