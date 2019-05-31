@@ -42,7 +42,7 @@ class DefaultController extends Controller
      * @return bool
      * @throws \yii\web\BadRequestHttpException
      */
-    public function beforeAction( Action $action)
+    public function beforeAction($action)
     {
         if ($action->id == 'install') {
             $this->enableCsrfValidation = false;
