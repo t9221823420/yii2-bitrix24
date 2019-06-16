@@ -24,3 +24,5 @@ to the require section of your `composer.json` file.
 
 Usage
 -----
+
+read here https://verstaem.com/bitrix24/cloud-app-on-symfony/
