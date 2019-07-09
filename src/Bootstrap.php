@@ -7,7 +7,9 @@ use yii\web\UrlRule;
 
 class Bootstrap implements BootstrapInterface
 {
-    
+    /**
+     * @param \yii\base\Application $app
+     */
     public function bootstrap($app)
     {
         

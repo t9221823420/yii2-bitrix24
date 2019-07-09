@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: bw
- * Date: 17.05.2019
- * Time: 11:22
- */
 
 namespace yozh\bitrix24\actions;
 
@@ -56,7 +50,7 @@ class InstallAction extends Action
             $errorsList[] = $exception->getMessage();
         }
         
-        return $this->controller->renderPartial('install', [
+        return $this->controller->render('install', [
             'errorsList' => $errorsList,
         ]);
     }

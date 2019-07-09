@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: bw
- * Date: 17.05.2019
- * Time: 11:20
- */
 
 namespace yozh\bitrix24\controllers;
 
@@ -19,6 +13,8 @@ use yozh\bitrix24\actions\InstallAction;
  */
 class DefaultController extends Controller
 {
+    public $layout = '@yozh/bitrix24/views/default/layout.php';
+    
     /**
      * @return array
      */
