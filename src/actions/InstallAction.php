@@ -21,7 +21,7 @@ class InstallAction extends Action
         
         try {
             
-            if (!$Credentials = Credentials::findOne(['member_id' => $request->get('member_id')])) {
+            if (!$Credentials = Credentials::findOne(['member_id' => $request->post('member_id')])) {
                 $Credentials = new Credentials();
             }
             

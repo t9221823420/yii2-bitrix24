@@ -40,7 +40,7 @@ class DefaultController extends Controller
      */
     public function beforeAction($action)
     {
-        if ($action->id == 'install') {
+        if ($action->id == 'install' || $action->id == 'entry') {
             $this->enableCsrfValidation = false;
         }
         
